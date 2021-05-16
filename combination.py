@@ -3,12 +3,9 @@ from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
 import numpy as np
 import spacy
+
 nlp = spacy.load("en_core_web_sm") # <--change-here
-
-
-# hlper_fnc function
-def hlper_fnc(test_list):
-    return tuple(zip(*test_list))
+excel_file_name = "sample_book.xlsx" # <--change-here
 
 def seed_combination(first_col, sec_col) :
     combi = []
@@ -32,34 +29,37 @@ def create_sheet(sheet_name, first_col_ind, second_col_ind):
     combi = seed_combination(first_col_ind, second_col_ind)
 
     for row in combi:
-        #print(row)
         row_list = list()
         row_list.append(row)
         entities = nlp(row)
         for entity in entities.ents:
-            row_list.append(entity.text)
+            row_list.append(entity.text) # append every entity in a new column
         ws.append(row_list)
     
+wb = load_workbook(filename = excel_file_name)
 
-title_col = ["Brand","Topic", "Level"] # <-modify here
-x = com(title_col, 2)
-col_names = [i for i in x]
-print(col_names)
+titles = []
+contentSeed_sheet = wb.get_sheet_by_name("Seeds")
+last_col_letter = "A"
+last_col_number = 0
+for title_col in (contentSeed_sheet[1]):
+    titles.append(title_col.value)
+    last_col_letter = title_col.column_letter
+    last_col_number = title_col.column
+x = com(titles, 2)
+col_names_combi = [i for i in x]
 
-wb = load_workbook(filename="sample_book.xlsx")
-
-contentSeed = wb.get_sheet_by_name("Seeds")
-all = contentSeed["A:C"] # <-modify here
-
-col_indices = create_comb_col_indices([0, 1, 2]) # <-modify here
+all = contentSeed_sheet["A:"+last_col_letter] 
+col_indices = create_comb_col_indices(list(range(last_col_number)))
 ind = 0
-for col_name in col_names :
-    print(col_name)
+for col_name in col_names_combi :
     col_indice = col_indices[ind]
     sheet_name = col_name[0] + '_' + col_name[1]
+    print("create sheet " + sheet_name)
     create_sheet(sheet_name, col_indice[0] , col_indice[1] )
     sheet_name = col_name[1] + '_' + col_name[0]
+    print("create sheet " + sheet_name)
     create_sheet(sheet_name, col_indice[1] , col_indice[0] )
     ind = ind + 1
 
-wb.save(filename = 'sample_book.xlsx')
+wb.save(filename = excel_file_name)
