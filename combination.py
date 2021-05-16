@@ -2,6 +2,9 @@ from itertools import combinations as com
 from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
 import numpy as np
+import spacy
+nlp = spacy.load("en_core_web_sm") # <--change-here
+
 
 # hlper_fnc function
 def hlper_fnc(test_list):
@@ -12,7 +15,6 @@ def seed_combination(first_col, sec_col) :
     for first_cell in all [first_col][1:] :  
         for sec_cell in all[sec_col][1:] :
             if (first_cell.value is not None) and (sec_cell.value is not None) :
-                #print(first_cell.value + " " + sec_cell.value)
                 combi.append(first_cell.value + " " + sec_cell.value)
             else : 
                 break
@@ -21,7 +23,6 @@ def seed_combination(first_col, sec_col) :
 def create_comb_col_indices(indices):
     comb_indices = com(indices, 2)
     comb_indices_arr = [k for k in comb_indices]
-    #print(comb_indices_arr)
     return comb_indices_arr
 
 
@@ -29,12 +30,14 @@ def create_sheet(sheet_name, first_col_ind, second_col_ind):
     ws = wb.create_sheet(str(sheet_name), 0)
     ws.title = str(sheet_name)
     combi = seed_combination(first_col_ind, second_col_ind)
-    print(type(combi))
 
     for row in combi:
-        print(row)
+        #print(row)
         row_list = list()
         row_list.append(row)
+        entities = nlp(row)
+        for entity in entities.ents:
+            row_list.append(entity.text)
         ws.append(row_list)
     
 
