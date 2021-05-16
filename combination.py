@@ -3,7 +3,11 @@ from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
 import numpy as np
 
-def seed_comobination(first_col, sec_col) :
+# hlper_fnc function
+def hlper_fnc(test_list):
+    return tuple(zip(*test_list))
+
+def seed_combination(first_col, sec_col) :
     combi = []
     for first_cell in all [first_col][1:] :  
         for sec_cell in all[sec_col][1:] :
@@ -20,8 +24,23 @@ def create_comb_col_indices(indices):
     #print(comb_indices_arr)
     return comb_indices_arr
 
-letter = ["Brand","Topic", "Level"] # <-modify here
-x = com(letter, 2)
+
+def create_sheet(sheet_name, first_col_ind, second_col_ind):
+    ws = wb.create_sheet(str(sheet_name), 0)
+    ws.title = str(sheet_name)
+    col_indice = col_indices[ind]
+    combi = seed_combination(col_indice[0], col_indice[1])
+    print(type(combi))
+
+    for row in combi:
+        print(row)
+        row_list = list()
+        row_list.append(row)
+        ws.append(row_list)
+    
+
+title_col = ["Brand","Topic", "Level"] # <-modify here
+x = com(title_col, 2)
 col_names = [i for i in x]
 print(col_names)
 
@@ -42,12 +61,14 @@ for col_name in col_names :
     ws = wb.create_sheet(str(sheet_name), 0)
     ws.title = str(sheet_name)
     col_indice = col_indices[ind]
-    combi = seed_comobination(col_indice[0], col_indice[1])
-    print(len(combi))
-    #np.asarray(combi)
-    ws.append(combi)
-    #combi = seed_comobination(col_indice[1], col_indice[0])
-    #ws.append(combi)
+    combi = seed_combination(col_indice[0], col_indice[1])
+    print(type(combi))
+
+    for row in combi:
+        print(row)
+        row_list = list()
+        row_list.append(row)
+        ws.append(row_list)
     ind = ind + 1
 
 
