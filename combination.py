@@ -43,9 +43,10 @@ contentSeed_sheet = wb.get_sheet_by_name("Seeds")
 last_col_letter = "A"
 last_col_number = 0
 for title_col in (contentSeed_sheet[1]):
-    titles.append(title_col.value)
-    last_col_letter = title_col.column_letter
-    last_col_number = title_col.column
+    if title_col.value is not None:
+        titles.append(title_col.value)
+        last_col_letter = title_col.column_letter
+        last_col_number = title_col.column
 x = com(titles, 2)
 col_names_combi = [i for i in x]
 
@@ -61,5 +62,4 @@ for col_name in col_names_combi :
     print("create sheet " + sheet_name)
     create_sheet(sheet_name, col_indice[1] , col_indice[0] )
     ind = ind + 1
-
-wb.save(filename = excel_file_name)
+    wb.save(filename = excel_file_name)
